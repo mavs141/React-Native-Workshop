@@ -18,34 +18,27 @@ export default class App extends React.Component {
     return (
       <View style={styles.container}>
         <View style={styles.header}>
-          <Text style={styles.headerText}> -NOTER- </Text>
+          <Text style={styles.headerText}> TO DO List </Text>
         </View>
 
-        <FlatList
+        <FlatList style={styles.flatList}
           data={this.state.items}
-          renderItem={
-            ({ item }) =>
-              <ListItem
-                itemKey={item.id}
-                title={item.title}
-                date={item.date}
-                deleteMethod={() => this.deleteClick(item.id)}
-                editMethod={() => this.editClick(item.id)} />
-          }
           keyExtractor={item => item.id}
-          extraData={this.state} />
+          extraData={this.state}
+          renderItem={({ item }) =>
+            <ListItem
+              itemKey={item.id}
+              title={item.title}
+              date={item.date}
+              deleteMethod={() => this.deleteClick(item.id)}
+              editMethod={() => this.editClick(item.id)} />} />
 
-        <View style={styles.footer} >
-
-          <TextInput style={styles.textInput}
-            onChangeText={(text) => this.setState({ text })}
-            value={this.state.text}
-            placeholder='>input note description'
-            placeholderTextColor='white'
-            underlineColorAndroid='transparent'>
-          </TextInput>
-
-        </View>
+        <TextInput style={styles.textInput}
+          onChangeText={(text) => this.setState({ text })}
+          value={this.state.text}
+          placeholder='input note description'
+          placeholderTextColor='white'>
+        </TextInput>
 
         <TouchableOpacity style={styles.addButton}
           onPress={this.addClick}>
@@ -120,14 +113,15 @@ const styles = StyleSheet.create({
   header: {
     backgroundColor: '#E91E63',
     alignItems: 'center',
-    justifyContent: 'center',
-    borderBottomWidth: 10,
-    borderBottomColor: '#ddd'
+    justifyContent: 'center'
   },
   headerText: {
     color: 'white',
     fontSize: 18,
     padding: 26
+  },
+  flatList: {
+    flex: 1
   },
   footer: {
     position: 'absolute',
@@ -137,9 +131,12 @@ const styles = StyleSheet.create({
     zIndex: 10
   },
   textInput: {
+    height: 50,
     alignSelf: 'stretch',
     color: '#fff',
-    padding: 20,
+    paddingLeft: 20,
+    paddingRight: 20,
+    fontSize: 20,
     backgroundColor: '#252525',
     borderTopWidth: 2,
     borderTopColor: '#ededed'
@@ -148,10 +145,10 @@ const styles = StyleSheet.create({
     position: 'absolute',
     zIndex: 11,
     right: 20,
-    bottom: 90,
+    bottom: 60,
     backgroundColor: '#E91E63',
-    width: 90,
-    height: 90,
+    width: 60,
+    height: 60,
     borderRadius: 50,
     alignItems: 'center',
     justifyContent: 'center',
