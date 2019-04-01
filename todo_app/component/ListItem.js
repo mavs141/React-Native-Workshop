@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         flexDirection: 'row',
-        backgroundColor: 'yellow',
+        backgroundColor: '#FFF8DC',
         position: 'relative',
         borderBottomWidth: 2,
         borderBottomColor: 'red'
@@ -46,14 +46,13 @@ const styles = StyleSheet.create({
         position: 'absolute',
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'green',
         padding: 10,
         top: 10,
         right: 10,
         bottom: 10
     },
     deleteButtonText: {
-        color: 'white',
+        color: '#E32636',
         fontSize: 34
     }
 });

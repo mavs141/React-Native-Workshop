@@ -1,22 +1,34 @@
 import React from 'react';
 import { StyleSheet, FlatList, Text, View, TouchableOpacity, TextInput } from 'react-native';
 import ListItem from './component/ListItem';
+import TextInputDialog from './component/TextInputDialog';
 
 export default class App extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
+      clickType: '',
+      selectedKey: '',
       items: [],
-      text: ''
+      text: '',
+      showTextInputDialog: false,
+      dialogTitle: ''
     };
   }
 
   render() {
-
-
     return (
       <View style={styles.container}>
+
+        <TextInputDialog
+          display={this.state.showTextInputDialog}
+          dialogTitle={this.state.dialogTitle}
+          confirmAction={this.doOnConfirm}
+          cancelAction={this.doOnCancel}>
+
+        </TextInputDialog>
+
         <View style={styles.header}>
           <Text style={styles.headerText}> TO DO List </Text>
         </View>
@@ -33,13 +45,6 @@ export default class App extends React.Component {
               deleteMethod={() => this.deleteClick(item.id)}
               editMethod={() => this.editClick(item.id)} />} />
 
-        <TextInput style={styles.textInput}
-          onChangeText={(text) => this.setState({ text })}
-          value={this.state.text}
-          placeholder='input note description'
-          placeholderTextColor='white'>
-        </TextInput>
-
         <TouchableOpacity style={styles.addButton}
           onPress={this.addClick}>
           <Text style={styles.addButtonText}> + </Text>
@@ -48,58 +53,99 @@ export default class App extends React.Component {
     );
   }
 
+  doOnConfirm = (text) => {
+    if (this.state.clickType === ClickType.ADD) {
+      this.addItem(text);
+      console.log("add new todo to todo list");
+    } else if (this.state.clickType === ClickType.EDIT) {
+      this.editItem(text);
+      console.log("update todo description from todo list");
+    }
+    this.setState({
+      clickType: '',
+      showTextInputDialog: false
+    })
+  }
+
+  doOnCancel = () => {
+    console.log("Cancal!");
+    this.setState({
+      clickType: '',
+      showTextInputDialog: false
+    })
+  }
+
+  addItem = (text) => {
+    const time = this.getCurrentTime(new Date());
+    const id = this.getUniqueId(text, new Date());
+    const items = this.state.items;
+    items.push({
+      'id': id,
+      'date': time,
+      'title': text
+    });
+
+    this.setState({
+      items: items,
+      text: ''
+    })
+  }
+
+  editItem = (text) => {
+    const time = this.getCurrentTime(new Date());
+    const items = this.state.items;
+    const item = items.find(item => item.id === this.state.selectedKey)
+    if (item) {
+      item['title'] = text
+      item['date'] = time
+    }
+    this.setState({
+      selectedKey: '',
+      items: items,
+      text: ''
+    })
+  }
+
   getUniqueId = (text, date) => {
-    return date.getUTCMilliseconds() + text
+    return date.getUTCMilliseconds() + text;
   }
 
   getCurrentTime = (date) => {
     return date.getFullYear() + '/' + (date.getMonth() + 1) + '/' + date.getDate()
-      + '  ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds()
+      + '  ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
   }
 
   addClick = () => {
-    if (this.state.text) {
-      const text = this.state.text;
-      const time = this.getCurrentTime(new Date());
-      const id = this.getUniqueId(text, new Date());
-      const items = this.state.items;
-      items.push({
-        'id': id,
-        'date': time,
-        'title': text
-      });
-
-      this.setState({
-        items: items,
-        text: ''
-      })
-    }
+    this.setState({
+      clickType: ClickType.ADD,
+      showTextInputDialog: true,
+      dialogTitle: 'add new ToDo'
+    });
   }
 
   deleteClick = (key) => {
     const items = this.state.items;
     items.splice(key, 1);
-    this.setState({ items: items })
+    this.setState({
+      selectedKey: '',
+      items: items
+    })
   }
 
   editClick = (key) => {
-    if (this.state.text) {
-      const text = this.state.text;
-      const time = this.getCurrentTime(new Date());
-      const items = this.state.items;
-
-      let item = items.find(item => item.id === key)
-      if (item) {
-        item['title'] = text
-        item['date'] = time
-      }
-      this.setState({
-        items: items,
-        text: ''
-      })
-    }
+    this.setState({
+      clickType: ClickType.EDIT,
+      selectedKey: key,
+      showTextInputDialog: true,
+      dialogTitle: 'edit exist ToDo'
+    });
   }
 
+}
+
+const ClickType = {
+  ADD: Symbol('ADD'),
+  EDIT: Symbol('EDIT')
 }
 
 const styles = StyleSheet.create({
@@ -145,7 +191,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     zIndex: 11,
     right: 20,
-    bottom: 60,
+    bottom: 20,
     backgroundColor: '#E91E63',
     width: 60,
     height: 60,
